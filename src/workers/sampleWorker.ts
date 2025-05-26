@@ -7,16 +7,19 @@ export default function sampleWorker(queueName: string) {
   new Worker(
     queueName,
     async (job: Job) => {
-      console.log("Sample job worker Kicking: ", job);
+      console.log('Sample job worker Kicking: ');
       if (job.name == 'sampleJob') {
         const sampleJobInstance = new SampleJob(job.data);
+        console.log();
+        console.log(sampleJobInstance.name);
+        console.log('----Printing----', job.data.name);
+        console.log('---- Job ID ----', job.id);
+        console.log();
 
-        try{
-
+        try {
           sampleJobInstance.handle(job);
-        }
-        catch(err){
-          console.log(err)
+        } catch (err) {
+          console.log(err);
         }
         return true;
       }

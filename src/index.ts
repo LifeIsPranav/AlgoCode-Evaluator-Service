@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import sampleWorker from './workers/sampleWorker';
 import apiRouter from './routes';
 // import sampleQueueProducer from './producers/sampleQueueProducer';
+import runPython from './containers/runPythonDocker';
 import serverConfig from './config/serverConfig';
 import serverAdapter from './config/bullBoardConfig';
 
@@ -20,12 +21,15 @@ app.listen(serverConfig.PORT, () => {
   console.log(`Server Started at Port ${serverConfig.PORT}`);
   sampleWorker('sampleQueue');
 
-  // console.log();
 
-  // sampleQueueProducer('sampleJob', {
-  //   name: `Pranav`,
-  //   company: 'google',
-  //   position: 'SDE 3',
-  //   location: 'Remote | Patna',
-  // });
+  const code = `x = input()
+y = input()
+print(x, y)
+`;
+
+  const tc = `40
+50
+`;
+  
+  runPython(code, tc);
 });

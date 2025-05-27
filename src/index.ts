@@ -4,7 +4,8 @@ import bodyParser from 'body-parser';
 import sampleWorker from './workers/sampleWorker';
 import apiRouter from './routes';
 // import sampleQueueProducer from './producers/sampleQueueProducer';
-import runPython from './containers/runPythonDocker';
+// import runPython from './containers/runPythonDocker';
+import runJava from './containers/runJavaDocker';
 import serverConfig from './config/serverConfig';
 import serverAdapter from './config/bullBoardConfig';
 
@@ -22,14 +23,21 @@ app.listen(serverConfig.PORT, () => {
   sampleWorker('sampleQueue');
 
 
-  const code = `x = input()
-y = input()
-print(x, y)
+  const code = `
+import java.util.*;
+public class Main{
+  public static void main(String[] args){
+    Scanner sc = new Scanner(System.in);
+    int input = sc.nextInt();
+    System.out.println("input given by user: " + input);
+    for(int i = 0; i < input; i++){
+      System.out.println(i);
+    }
+  }
+}
 `;
 
-  const tc = `40
-50
-`;
+  const tc = `10`;
   
-  runPython(code, tc);
+  runJava(code, tc);
 });

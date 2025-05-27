@@ -1,35 +1,39 @@
 // import { Docker } from 'dockerode';
 
 // import { TestCases } from '../types/testCases';
-import { JAVA_IMAGE } from '../utils/constants';
+import { CPP_IMAGE } from '../utils/constants';
 import decodeDockerStream from './dockerHelper';
 import createContainer from './containerFactory';
 
-async function runJava(code: string, inputTestCase: string) {
+async function runCpp(code: string, inputTestCase: string) {
   const rawLogBuffer: Buffer[] = [];
 
-  console.log('initializing a new java docker Container..');
-  // const javaDockerContainer = await createContainer(JAVA_IMAGE, [
-  //   'java3',
+  console.log('initializing a new cpp docker Container..');
+  // const cppDockerContainer = await createContainer(CPP_IMAGE, [
+  //   'cpp3',
   //   '-c',
   //   code,
   //   'stty -echo',
   // ]);
   const safeCode = code.replace(/'/g, `'\\''`);
   const safeTestCases = inputTestCase.replace(/'/g, `'\\''`);
-  const runCommand = `echo '${safeCode}' > Main.java && javac Main.java && echo '${safeTestCases}' | java Main`;
+  const runCommand = `echo '${safeCode}' > main.cpp && g++ main.cpp -o main && echo '${safeTestCases}' | stdbuf -oL -eL ./main`;
 
-  // let runCommand = `echo \'${code}\' > test.py && echo ${inputTestCase} | java3 test.py`;
+  // let runCommand = `echo \'${code}\' > test.py && echo ${inputTestCase} | cpp3 test.py`;
   // runCommand = runCommand.replace(/)
 
-  const javaDockerContainer = await createContainer(JAVA_IMAGE, ['/bin/sh', '-c', runCommand ]);
-  // const javaDockerContainer = await createContainer(JAVA_IMAGE, [`echo -e "x=input()\nprint('value of x is:', x)" > test.py && echo 2 | java3 test.py`
+  const cppDockerContainer = await createContainer(CPP_IMAGE, [
+    '/bin/sh',
+    '-c',
+    runCommand,
+  ]);
+  // const cppDockerContainer = await createContainer(CPP_IMAGE, [`echo -e "x=input()\nprint('value of x is:', x)" > test.py && echo 2 | cpp3 test.py`
 
   // starting /booting the docker Container
-  await javaDockerContainer.start();
-  console.log('Started the java docker Container');
+  await cppDockerContainer.start();
+  console.log('Started the cpp docker Container');
 
-  const loggerStream = await javaDockerContainer.logs({
+  const loggerStream = await cppDockerContainer.logs({
     stdout: true,
     stderr: true,
     timestamps: false,
@@ -55,6 +59,6 @@ async function runJava(code: string, inputTestCase: string) {
   });
 
   // Remove container when done with it
-  await javaDockerContainer.remove();
+  await cppDockerContainer.remove();
 }
-export default runJava;
+export default runCpp;

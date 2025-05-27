@@ -2,6 +2,7 @@
 
 // import { TestCases } from '../types/testCases';
 import { CPP_IMAGE } from '../utils/constants';
+import pullImage from './pullImage';
 import decodeDockerStream from './dockerHelper';
 import createContainer from './containerFactory';
 
@@ -9,6 +10,9 @@ async function runCpp(code: string, inputTestCase: string) {
   const rawLogBuffer: Buffer[] = [];
 
   console.log('initializing a new cpp docker Container..');
+
+  await pullImage(CPP_IMAGE);
+
   // const cppDockerContainer = await createContainer(CPP_IMAGE, [
   //   'cpp3',
   //   '-c',

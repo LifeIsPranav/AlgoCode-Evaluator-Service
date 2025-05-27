@@ -50,7 +50,7 @@ async function runCpp(code: string, inputTestCase: string) {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  await new Promise((res, _rej) => {
+  const response = await new Promise((res, _rej) => {
     loggerStream.on('end', () => {
       console.log(rawLogBuffer);
       const completeBuffer = Buffer.concat(rawLogBuffer);
@@ -58,11 +58,12 @@ async function runCpp(code: string, inputTestCase: string) {
       console.log(decodedStream);
 
       console.log(decodedStream.stdout);
-      res(decodeDockerStream);
+      res(decodedStream);
     });
   });
 
   // Remove container when done with it
   await cppDockerContainer.remove();
+  return response;
 }
 export default runCpp;
